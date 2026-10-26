@@ -5,9 +5,11 @@ from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.app import App
+from kivy.core.window import Window
 
 import instructions
 import ruffer
+from seconds import Timer
 
 class Application(App):
     def __init__(self, **kwargs):
@@ -15,6 +17,7 @@ class Application(App):
        
     def build(self):
         self.sm = ScreenManager() 
+        Window.clearcolor = (0.1, 0.2, 0.4, 1)
 
         # ------------------------ SCREEN 1 -----------------------------------------
         screen1 = Screen(name="StartScreen")
@@ -43,7 +46,9 @@ class Application(App):
         # ------------------------ SCREEN 2 -----------------------------------------
 
         screen2 = Screen(name='P1')
-        p1_label = Label(text=instructions.txt_test1, halign='center', valign='middle')
+        p1_label = Label(text=instructions.txt_test1, halign='center', valign='middle', size_hint_y=None)
+        p1_label.bind(width=lambda inst, w: setattr(inst, "text_size", (w, None)))
+        p1_label.bind(texture_size=lambda inst, ts: setattr(inst, "height", ts[1]))
         self.p1_input = TextInput(hint_text="Введите пульс", multiline=False)
         p1_button = Button(text="Продолжить", on_press=self.on_p1_progress)
 
@@ -62,14 +67,22 @@ class Application(App):
         # ------------------------ SCREEN 3 -----------------------------------------
         
         screen3 = Screen(name='Squats')
-        squats_label = Label(text=instructions.txt_sits)
-        squats_button = Button(text="Продолжить", on_press=lambda x: setattr(self.sm, "current", "P2P3"))
+
+        self.squats_button = Button(text="Продолжить", disabled=True, on_press=lambda x: setattr(self.sm, "current", "P2P3"))
+
+        squats_label = Label(text=instructions.txt_sits, size_hint_y=None, valign="middle", halign='center')
+        self.squats_timer = Timer(50, on_finish=self.on_timer_finish, size_hint_y=None, halign="center", valign='middle')
+
+        squats_label.bind(width=lambda inst, w: setattr(inst, "text_size", (w, None)))
+        self.squats_timer.bind(texture_size=lambda inst, ts: setattr(inst, "height", ts[1]))
+
         
         squats_form = BoxLayout(orientation="vertical", size_hint=(None, None), size=(300, 150), spacing=10, pos_hint={"center_x": 0.5})
-        squats_form.add_widget(squats_button)
+        squats_form.add_widget(self.squats_button)
 
         squats_root = BoxLayout(orientation="vertical", padding=20, spacing=20)
         squats_root.add_widget(squats_label)
+        squats_root.add_widget(self.squats_timer)
         squats_root.add_widget(squats_form)
 
         screen3.add_widget(squats_root)
@@ -121,6 +134,7 @@ class Application(App):
         try:
             self.p1 = int(self.p1_input.text)
             setattr(self.sm, "current", "Squats")
+            self.squats_timer.start()
         except ValueError:
             return
     
@@ -133,5 +147,8 @@ class Application(App):
         except ValueError:
             return
    
+
+    def on_timer_finish(self):
+        self.squats_button.disabled = False
 
 Application().run()
