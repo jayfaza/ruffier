@@ -8,7 +8,7 @@ from kivy.app import App
 from kivy.core.window import Window
 
 import instructions
-import ruffer
+import ruffier
 from seconds import Timer
 
 
@@ -39,6 +39,7 @@ class Application(App):
             spacing=10,
             pos_hint={"center_x": 0.5},
         )
+
         self.name_input = TextInput(hint_text="Введите имя", multiline=False)
         self.age_input = TextInput(hint_text="Введите возраст", multiline=False)
         btn_start = Button(text="Начать", on_press=self.on_startscreen_progress)
@@ -55,7 +56,6 @@ class Application(App):
         self.sm.add_widget(screen1)
 
         # ------------------------ SCREEN 2 -----------------------------------------
-
         screen2 = Screen(name="P1")
         p1_label = Label(
             text=instructions.txt_test1,
@@ -190,7 +190,7 @@ class Application(App):
         try:
             self.p2 = int(self.p1_input.text)
             self.p3 = int(self.p2_input.text)
-            self.result_label.text = ruffer.test(
+            self.result_label.text = ruffier.test(
                 self.p1, self.p2, self.p3, self.user_age
             )
             setattr(self.sm, "current", "Result")
