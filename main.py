@@ -89,7 +89,7 @@ class Application(App):
 
         screen3 = Screen(name="Squats")
 
-        self.squats_button = Button(
+        squats_button = Button(
             text="Продолжить",
             disabled=True,
             on_press=lambda x: setattr(self.sm, "current", "P2P3"),
@@ -103,7 +103,7 @@ class Application(App):
         )
         self.squats_timer = Timer(
             50,
-            on_finish=self.on_timer_finish,
+            on_finish=lambda: setattr(squats_button, "disabled", False),
             size_hint_y=None,
             halign="center",
             valign="middle",
@@ -121,7 +121,7 @@ class Application(App):
             spacing=10,
             pos_hint={"center_x": 0.5},
         )
-        squats_form.add_widget(self.squats_button)
+        squats_form.add_widget(squats_button)
 
         squats_root = BoxLayout(orientation="vertical", padding=20, spacing=20)
         squats_root.add_widget(squats_label)
@@ -137,7 +137,7 @@ class Application(App):
         p2p3_label = Label(text=instructions.txt_test3)
         self.p2_input = TextInput(hint_text="За первые 15 секунд")
         self.p3_input = TextInput(hint_text="За последние 15 секунд")
-        p2p3_btn = Button(text="Continue", on_press=self.on_p1p2_progress)
+        p2p3_btn = Button(text="Продолжить", on_press=self.on_p1p2_progress)
 
         p2p3_form = BoxLayout(
             orientation="vertical",
@@ -196,9 +196,6 @@ class Application(App):
             setattr(self.sm, "current", "Result")
         except ValueError:
             return
-
-    def on_timer_finish(self):
-        self.squats_button.disabled = False
 
 
 Application().run()
